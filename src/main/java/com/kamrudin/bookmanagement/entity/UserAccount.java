@@ -1,0 +1,66 @@
+package com.kamrudin.bookmanagement.entity;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "users")
+public class UserAccount {
+
+    @Id
+    private String id;
+
+    private String name;
+    private String email;
+    private String password; // hashed
+    private String role;     // ROLE_ADMIN or ROLE_USER
+
+    public UserAccount() {
+    }
+
+    public UserAccount(String name, String email, String password, String role) {
+        this.name = name;
+        this.email = email.toLowerCase();
+        this.password = password;
+        this.role = role;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email.toLowerCase();
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+}

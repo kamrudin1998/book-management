@@ -1,0 +1,100 @@
+package com.kamrudin.bookmanagement.entity;
+
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "books")
+public class Book {
+
+    @Id
+    private String id;
+
+    @NotBlank(message = "Title is required")
+    @Size(max = 200)
+    private String title;
+
+    @NotBlank(message = "Author is required")
+    @Size(max = 100)
+    private String author;
+
+    @Size(max = 100)
+    private String category;
+
+    @Min(value = 0, message = "Price must be positive")
+    private Double price;
+
+    private Integer publishedYear;
+
+    private Integer stock;
+
+    public Book() {
+    }
+
+    public Book(String title, String author, String category, Double price, Integer publishedYear, Integer stock) {
+        this.title = title;
+        this.author = author;
+        this.category = category;
+        this.price = price;
+        this.publishedYear = publishedYear;
+        this.stock = stock;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public Integer getPublishedYear() {
+        return publishedYear;
+    }
+
+    public void setPublishedYear(Integer publishedYear) {
+        this.publishedYear = publishedYear;
+    }
+
+    public Integer getStock() {
+        return stock;
+    }
+
+    public void setStock(Integer stock) {
+        this.stock = stock;
+    }
+}
