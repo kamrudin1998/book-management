@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Management | Library</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 5 CDN -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    />
+
+    <!-- Icons -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+
+    <style>
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at top left, #1a73e8, #0b1020);
+            color: #f8f9fa;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        .navbar {
+            background: rgba(15, 23, 42, 0.9) !important;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero {
+            padding: 3rem 0 1rem;
+        }
+
+        .search-card {
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 18px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.7);
+        }
+
+        .book-card {
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 18px;
+            border: 1px solid rgba(148, 163, 184, 0.4);
+            transition: all 0.25s ease;
+            height: 100%;
+        }
+
+        .book-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
+            border-color: #4f46e5;
+        }
+
+        .badge-category {
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            color: #bfdbfe;
+            border-radius: 999px;
+        }
+
+        .price-tag {
+            font-weight: 600;
+            color: #a7f3d0;
+        }
+
+        .pagination .page-link {
+            background-color: rgba(15, 23, 42, 0.9);
+            border-color: rgba(148, 163, 184, 0.5);
+            color: #e5e7eb;
+        }
+
+        .pagination .page-item.active .page-link {
+            background: linear-gradient(135deg, #4f46e5, #ec4899);
+            border-color: transparent;
+            color: #fff;
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, #4f46e5, #ec4899);
+            border: none;
+            color: #fff;
+        }
+
+        .btn-gradient:hover {
+            background: linear-gradient(135deg, #4338ca, #db2777);
+            color: #fff;
+        }
+
+        footer {
+            border-top: 1px solid rgba(148, 163, 184, 0.3);
+            background: rgba(15, 23, 42, 0.95);
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark border-bottom border-secondary">
+    <div class="container">
+        <a class="navbar-brand fw-semibold" href="#">
+            <i class="fa-solid fa-book-open-reader me-2 text-warning"></i>
+            Book Management
+        </a>
+
+        <div class="d-flex gap-2">
+            <a href="admin.html" class="btn btn-sm btn-outline-light">
+                <i class="fa-solid fa-user-gear me-1"></i> Admin Panel
+            </a>
+        </div>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="container">
+        <div class="row align-items-center mb-4">
+            <div class="col-lg-8">
+                <h1 class="display-5 fw-bold mb-2">
+                    Discover & Manage <span class="text-info">Books</span>
+                </h1>
+                <p class="lead text-secondary">
+                    Search books by title or author, browse the catalog, and see availability in real time.
+                </p>
+            </div>
+        </div>
+
+        <!-- Search & Filters -->
+        <div class="search-card p-3 p-md-4 mb-4">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label text-secondary mb-1">Search By</label>
+                    <select id="searchType" class="form-select bg-dark text-light border-secondary">
+                        <option value="title" selected>Title</option>
+                        <option value="author">Author</option>
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label text-secondary mb-1">Keyword</label>
+                    <input type="text" id="searchQuery" class="form-control bg-dark text-light border-secondary"
+                           placeholder="e.g. Clean Code, Robert Martin">
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button id="btnSearch" class="btn btn-gradient w-100">
+                        <i class="fa fa-search me-1"></i> Search
+                    </button>
+                    <button id="btnClearSearch" class="btn btn-outline-light d-none">
+                        Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Books Grid -->
+        <div id="booksContainer" class="row g-4 mb-4">
+            <!-- JS will inject cards -->
+        </div>
+
+        <!-- Pagination -->
+        <nav>
+            <ul id="pagination" class="pagination justify-content-center"></ul>
+        </nav>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="text-center text-secondary d-none mb-5">
+            <i class="fa-regular fa-face-frown-open fa-3x mb-3"></i>
+            <p class="mb-0">No books found. Try a different search.</p>
+        </div>
+    </div>
+</section>
+
+<footer class="py-3 mt-auto">
+    <div class="container small text-center text-secondary">
+        &copy; <span id="year"></span> Book Management · Built with Spring Boot & MongoDB
+    </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const API_BASE = "http://localhost:8080";
+    let currentPage = 0;
+    const pageSize = 9;
+    let isSearchMode = false;
+
+    document.getElementById("year").innerText = new Date().getFullYear();
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadBooks(0);
+
+        document.getElementById("btnSearch").addEventListener("click", handleSearch);
+        document.getElementById("btnClearSearch").addEventListener("click", () => {
+            document.getElementById("searchQuery").value = "";
+            isSearchMode = false;
+            document.getElementById("btnClearSearch").classList.add("d-none");
+            loadBooks(0);
+        });
+    });
+
+    async function loadBooks(page) {
+        if (isSearchMode) return; // when search active, don't auto load pagination
+
+        currentPage = page;
+        const url = `${API_BASE}/api/books?page=${page}&size=${pageSize}&sortBy=title&direction=asc`;
+
+        try {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error("Failed to fetch books");
+            const data = await res.json();
+            renderBooks(data.content);
+            renderPagination(data.totalPages, data.number);
+        } catch (err) {
+            console.error(err);
+            showError("Unable to load books. Please try again.");
+        }
+    }
+
+    function renderBooks(books) {
+        const container = document.getElementById("booksContainer");
+        const emptyState = document.getElementById("emptyState");
+
+        container.innerHTML = "";
+
+        if (!books || books.length === 0) {
+            emptyState.classList.remove("d-none");
+            return;
+        } else {
+            emptyState.classList.add("d-none");
+        }
+
+        books.forEach(book => {
+            const col = document.createElement("div");
+            col.className = "col-md-4";
+
+            col.innerHTML = `
+                <div class="book-card p-3 d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge badge-category px-3 py-1">
+                            ${book.category || "General"}
+                        </span>
+                        <small class="text-secondary">
+                            ${book.publishedYear || "N/A"}
+                        </small>
+                    </div>
+                    <h5 class="fw-semibold mb-1 text-light">${book.title}</h5>
+                    <p class="text-secondary mb-2">
+                        <i class="fa-solid fa-user-pen me-1"></i>
+                        ${book.author}
+                    </p>
+                    <p class="small text-secondary mb-2">
+                        <i class="fa-solid fa-boxes-stacked me-1"></i>
+                        Stock: <span class="text-light">${book.stock ?? "N/A"}</span>
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center mt-auto pt-2">
+                        <span class="price-tag">
+                            <i class="fa-solid fa-indian-rupee-sign me-1"></i>
+                            ${book.price != null ? book.price.toFixed(2) : "N/A"}
+                        </span>
+                        <button class="btn btn-sm btn-outline-light" onclick='viewDetails(${JSON.stringify(book)})'>
+                            Details
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(col);
+        });
+    }
+
+    function renderPagination(totalPages, current) {
+        const pagination = document.getElementById("pagination");
+        pagination.innerHTML = "";
+
+        if (totalPages <= 1 || isSearchMode) {
+            return;
+        }
+
+        for (let i = 0; i < totalPages; i++) {
+            const li = document.createElement("li");
+            li.className = "page-item " + (i === current ? "active" : "");
+            li.innerHTML = `
+                <button class="page-link" onclick="loadBooks(${i})">
+                    ${i + 1}
+                </button>
+            `;
+            pagination.appendChild(li);
+        }
+    }
+
+    async function handleSearch() {
+        const type = document.getElementById("searchType").value;
+        const q = document.getElementById("searchQuery").value.trim();
+
+        if (!q) {
+            isSearchMode = false;
+            document.getElementById("btnClearSearch").classList.add("d-none");
+            return loadBooks(0);
+        }
+
+        let url;
+        if (type === "title") {
+            url = `${API_BASE}/api/books/search/title?title=${encodeURIComponent(q)}`;
+        } else {
+            url = `${API_BASE}/api/books/search/author?author=${encodeURIComponent(q)}`;
+        }
+
+        try {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error("Search failed");
+            const data = await res.json();
+            isSearchMode = true;
+            document.getElementById("btnClearSearch").classList.remove("d-none");
+            renderBooks(data);
+            document.getElementById("pagination").innerHTML = "";
+        } catch (err) {
+            console.error(err);
+            showError("Search failed. Please try again.");
+        }
+    }
+
+    function viewDetails(book) {
+        alert(
+            `Title: ${book.title}\nAuthor: ${book.author}\nCategory: ${book.category || "General"}\n` +
+            `Price: ₹${book.price ?? "N/A"}\nYear: ${book.publishedYear ?? "N/A"}\nStock: ${book.stock ?? "N/A"}`
+        );
+    }
+
+    function showError(msg) {
+        alert(msg);
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel | Book Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 5 -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    />
+    <!-- Icons -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+
+    <style>
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at top left, #1e293b, #020617);
+            color: #f9fafb;
+        }
+
+        .navbar {
+            background: rgba(15, 23, 42, 0.98) !important;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-glass {
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 18px;
+            border: 1px solid rgba(148, 163, 184, 0.4);
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.8);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, #22c55e, #06b6d4);
+            border: none;
+            color: #fff;
+        }
+
+        .btn-gradient:hover {
+            background: linear-gradient(135deg, #16a34a, #0891b2);
+        }
+
+        .table-dark-custom {
+            --bs-table-bg: rgba(15, 23, 42, 0.95);
+            --bs-table-border-color: rgba(51, 65, 85, 0.8);
+        }
+
+        .badge-role {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.6);
+            color: #bbf7d0;
+        }
+
+        .form-control, .form-select {
+            background-color: #020617;
+            border-color: #1f2937;
+            color: #e5e7eb;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #22c55e;
+            box-shadow: 0 0 0 0.15rem rgba(34, 197, 94, 0.25);
+        }
+
+        .cursor-pointer {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark border-bottom border-secondary">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-semibold" href="#">
+            <i class="fa-solid fa-shield-halved me-2 text-success"></i>
+            Admin · Book Management
+        </a>
+
+        <div class="ms-auto d-flex align-items-center gap-3">
+            <span id="adminInfo" class="small text-secondary d-none">
+                <span class="badge badge-role me-1">ADMIN</span>
+                <span id="adminName"></span>
+            </span>
+            <button id="btnLogout" class="btn btn-sm btn-outline-light d-none">
+                <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- LOGIN VIEW -->
+<section id="loginSection" class="d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+    <div class="container" style="max-width: 420px;">
+        <div class="card card-glass p-4">
+            <h3 class="mb-3 fw-semibold text-center">
+                <i class="fa-solid fa-user-lock me-2 text-info"></i>
+                Admin Login
+            </h3>
+            <p class="text-secondary small text-center mb-4">
+                Use your admin credentials to manage books.
+            </p>
+
+            <div id="loginAlert" class="alert alert-danger py-2 small d-none"></div>
+
+            <form id="loginForm" autocomplete="off">
+                <div class="mb-3">
+                    <label class="form-label small">Email</label>
+                    <input type="email" id="email" class="form-control" required
+                           placeholder="admin@yopmail.com">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small">Password</label>
+                    <input type="password" id="password" class="form-control" required
+                           placeholder="Admin@123">
+                </div>
+                <button type="submit" class="btn btn-gradient w-100">
+                    <i class="fa-solid fa-right-to-bracket me-1"></i>
+                    Login
+                </button>
+                <div class="text-center mt-3">
+                    <a href="index.html" class="small text-decoration-none text-secondary">
+                        ← Back to User View
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- DASHBOARD VIEW -->
+<section id="dashboardSection" class="container-fluid py-4 d-none">
+    <div class="row g-4">
+        <!-- LEFT: Book Form -->
+        <div class="col-lg-4">
+            <div class="card card-glass p-3 h-100">
+                <h5 class="fw-semibold mb-3">
+                    <i class="fa-solid fa-pen-to-square me-2 text-warning"></i>
+                    <span id="formTitle">Add New Book</span>
+                </h5>
+
+                <form id="bookForm">
+                    <input type="hidden" id="bookId">
+
+                    <div class="mb-2">
+                        <label class="form-label small">Title *</label>
+                        <input type="text" id="title" class="form-control" required>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label small">Author *</label>
+                        <input type="text" id="author" class="form-control" required>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label small">Category</label>
+                        <input type="text" id="category" class="form-control" placeholder="Programming, Fiction, etc.">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label small">Price</label>
+                            <input type="number" step="0.01" min="0" id="price" class="form-control">
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label small">Published Year</label>
+                            <input type="number" id="publishedYear" class="form-control">
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label small">Stock</label>
+                            <input type="number" id="stock" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-3">
+                        <button type="submit" class="btn btn-gradient flex-grow-1">
+                            <i class="fa-solid fa-floppy-disk me-1"></i>
+                            <span id="btnSaveText">Save Book</span>
+                        </button>
+                        <button type="button" id="btnResetForm" class="btn btn-outline-light">
+                            Clear
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- RIGHT: Books Table -->
+        <div class="col-lg-8">
+            <div class="card card-glass p-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="fw-semibold mb-0">
+                        <i class="fa-solid fa-book me-2 text-info"></i>
+                        All Books
+                    </h5>
+                    <button class="btn btn-sm btn-outline-light" id="btnRefresh">
+                        <i class="fa-solid fa-rotate me-1"></i> Refresh
+                    </button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle table-dark-custom mb-0">
+                        <thead class="small text-uppercase text-secondary">
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Cat.</th>
+                            <th>Price</th>
+                            <th>Year</th>
+                            <th>Stock</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="booksTableBody">
+                        <!-- JS will inject rows -->
+                        </tbody>
+                    </table>
+                </div>
+                <p id="noBooksMsg" class="small text-secondary mt-2 d-none">
+                    No books found. Start by adding a new one.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const API_BASE = "http://localhost:8080";
+
+    const loginSection = document.getElementById("loginSection");
+    const dashboardSection = document.getElementById("dashboardSection");
+    const loginForm = document.getElementById("loginForm");
+    const loginAlert = document.getElementById("loginAlert");
+    const btnLogout = document.getElementById("btnLogout");
+    const adminInfo = document.getElementById("adminInfo");
+    const adminNameSpan = document.getElementById("adminName");
+
+    const bookForm = document.getElementById("bookForm");
+    const booksTableBody = document.getElementById("booksTableBody");
+    const noBooksMsg = document.getElementById("noBooksMsg");
+    const btnRefresh = document.getElementById("btnRefresh");
+    const btnResetForm = document.getElementById("btnResetForm");
+    const formTitle = document.getElementById("formTitle");
+    const btnSaveText = document.getElementById("btnSaveText");
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const token = localStorage.getItem("jwt");
+        const name = localStorage.getItem("adminName");
+
+        if (token) {
+            showDashboard(name || "Admin");
+            loadBooksAdmin();
+        } else {
+            showLogin();
+        }
+
+        loginForm.addEventListener("submit", handleLogin);
+        btnLogout.addEventListener("click", handleLogout);
+        bookForm.addEventListener("submit", handleBookSave);
+        btnRefresh.addEventListener("click", loadBooksAdmin);
+        btnResetForm.addEventListener("click", resetForm);
+    });
+
+    function showLogin() {
+        loginSection.classList.remove("d-none");
+        dashboardSection.classList.add("d-none");
+        btnLogout.classList.add("d-none");
+        adminInfo.classList.add("d-none");
+    }
+
+    function showDashboard(name) {
+        loginSection.classList.add("d-none");
+        dashboardSection.classList.remove("d-none");
+        btnLogout.classList.remove("d-none");
+        adminInfo.classList.remove("d-none");
+        adminNameSpan.textContent = name || "Admin";
+    }
+
+    async function handleLogin(e) {
+        e.preventDefault();
+        loginAlert.classList.add("d-none");
+        loginAlert.textContent = "";
+
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+
+        try {
+            const res = await fetch(`${API_BASE}/api/auth/login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (!res.ok) {
+                throw new Error("Invalid credentials");
+            }
+
+            const data = await res.json();
+
+            // adjust according to your AuthController response
+            const token = data.token || data.jwt || data.accessToken;
+            if (!token) {
+                throw new Error("Token not found in response");
+            }
+
+            localStorage.setItem("jwt", token);
+            localStorage.setItem("adminName", data.name || "Admin");
+
+            showDashboard(data.name || "Admin");
+            loadBooksAdmin();
+        } catch (err) {
+            console.error(err);
+            loginAlert.textContent = "Login failed. Please check your email and password.";
+            loginAlert.classList.remove("d-none");
+        }
+    }
+
+    function handleLogout() {
+        localStorage.removeItem("jwt");
+        localStorage.removeItem("adminName");
+        resetForm();
+        showLogin();
+    }
+
+    function getAuthHeaders() {
+        const token = localStorage.getItem("jwt");
+        return {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+        };
+    }
+
+    async function loadBooksAdmin() {
+        booksTableBody.innerHTML = "";
+        noBooksMsg.classList.add("d-none");
+
+        try {
+            const res = await fetch(`${API_BASE}/api/books?page=0&size=100&sortBy=title&direction=asc`, {
+                headers: getAuthHeaders()
+            });
+            if (!res.ok) throw new Error("Failed to load books");
+
+            const data = await res.json();
+            const books = data.content || data;
+
+            if (!books || books.length === 0) {
+                noBooksMsg.classList.remove("d-none");
+                return;
+            }
+
+            books.forEach(book => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${book.title}</td>
+                    <td>${book.author}</td>
+                    <td>${book.category || "-"}</td>
+                    <td>${book.price != null ? "₹" + book.price.toFixed(2) : "-"}</td>
+                    <td>${book.publishedYear || "-"}</td>
+                    <td>${book.stock ?? "-"}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-info me-1"
+                            onclick='editBook(${JSON.stringify(book)})'>
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger"
+                            onclick="deleteBook('${book.id}')">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                booksTableBody.appendChild(tr);
+            });
+        } catch (err) {
+            console.error(err);
+            alert("Failed to load books. Check if backend is running.");
+        }
+    }
+
+    function editBook(book) {
+        document.getElementById("bookId").value = book.id;
+        document.getElementById("title").value = book.title || "";
+        document.getElementById("author").value = book.author || "";
+        document.getElementById("category").value = book.category || "";
+        document.getElementById("price").value = book.price ?? "";
+        document.getElementById("publishedYear").value = book.publishedYear ?? "";
+        document.getElementById("stock").value = book.stock ?? "";
+
+        formTitle.textContent = "Edit Book";
+        btnSaveText.textContent = "Update Book";
+    }
+
+    function resetForm() {
+        bookForm.reset();
+        document.getElementById("bookId").value = "";
+        formTitle.textContent = "Add New Book";
+        btnSaveText.textContent = "Save Book";
+    }
+
+    async function handleBookSave(e) {
+        e.preventDefault();
+
+        const id = document.getElementById("bookId").value;
+        const payload = {
+            title: document.getElementById("title").value.trim(),
+            author: document.getElementById("author").value.trim(),
+            category: document.getElementById("category").value.trim() || null,
+            price: document.getElementById("price").value ? parseFloat(document.getElementById("price").value) : null,
+            publishedYear: document.getElementById("publishedYear").value ? parseInt(document.getElementById("publishedYear").value) : null,
+            stock: document.getElementById("stock").value ? parseInt(document.getElementById("stock").value) : null
+        };
+
+        if (!payload.title || !payload.author) {
+            alert("Title and Author are required.");
+            return;
+        }
+
+        const isUpdate = !!id;
+        const url = isUpdate ? `${API_BASE}/api/books/${id}` : `${API_BASE}/api/books`;
+        const method = isUpdate ? "PUT" : "POST";
+
+        try {
+            const res = await fetch(url, {
+                method,
+                headers: getAuthHeaders(),
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                const txt = await res.text();
+                console.error("Error:", txt);
+                throw new Error("Failed to save book");
+            }
+
+            resetForm();
+            loadBooksAdmin();
+        } catch (err) {
+            console.error(err);
+            alert("Failed to save book. Please check console/logs.");
+        }
+    }
+
+    async function deleteBook(id) {
+        if (!confirm("Are you sure you want to delete this book?")) return;
+
+        try {
+            const res = await fetch(`${API_BASE}/api/books/${id}`, {
+                method: "DELETE",
+                headers: getAuthHeaders()
+            });
+
+            if (!res.ok) throw new Error("Delete failed");
+
+            loadBooksAdmin();
+        } catch (err) {
+            console.error(err);
+            alert("Failed to delete book.");
+        }
+    }
+</script>
+</body>
+</html>
