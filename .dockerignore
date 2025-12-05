@@ -1,0 +1,37 @@
+# Build Stage Logs
+# Run: docker-compose up --build
+
+# Ignore common build artifacts
+target/
+*.jar
+*.war
+
+# Docker
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+
+# Node (if frontend builds)
+node_modules/
+package-lock.json
+
+# Database
+.mongodb/
+mongodb_data/
+
+# Git
+.git
+.gitignore
